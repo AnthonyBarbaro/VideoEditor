@@ -1,0 +1,12 @@
+# .gitignore
+
+# 1) Ignore everything by default
+*
+
+# 2) Never ignore .gitignore itself
+!.gitignore
+
+# 3) Whitelist your important files/folders:
+!main.py
+!test1.py
+!test/
