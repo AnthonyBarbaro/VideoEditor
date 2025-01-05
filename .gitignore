@@ -9,4 +9,5 @@
 # 3) Whitelist your important files/folders:
 !main.py
 !test1.py
-!test/
+!test.py
+!YT2.py

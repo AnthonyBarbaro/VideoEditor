@@ -18,14 +18,14 @@ def main():
     ffmpeg_path = r"C:\Users\antho\miniconda3\envs\tiktok_env\Library\bin\ffmpeg.exe"
 
     # 2) Paths for input videos
-    main_video = "videos/main1.mp4"        # The main “top” video
+    main_video = "videos/main2.mp4"        # The main “top” video
     bottom_video = "videos/bottom1.mp4"    # The bottom video
 
     # 3) Output file names/directories
-    subtitles_file = "main_subtitles.srt"
-    main_subtitled_video = "main_subtitled.mp4"
-    stacked_video = "vertical_merged.mp4"
-    chunk_folder = "chunks"  # Where we'll store chunks if we split
+    subtitles_file = "temp/main_subtitles.srt"
+    main_subtitled_video = "temp/main_subtitled.mp4"
+    stacked_video = "temp/vertical_merged.mp4"
+    chunk_folder = "output/chunks"  # Where we'll store chunks if we split
 
     # === STEP A: Transcribe with Whisper ===
     print("=== STEP A: Transcribing with Whisper ===")
@@ -51,7 +51,7 @@ def main():
         ffmpeg_path,
         "-y",                      # Overwrite output
         "-i", main_video,          # Input file
-        "-vf", f"subtitles={subtitles_file}",  # Add SRT subtitles
+        "-vf", f"subtitles={subtitles_file}:force_style='FontSize=38'",  # Set subtitle font size
         "-c:v", "libx264",         # Encode video with x264
         "-c:a", "aac",             # Encode audio with AAC
         main_subtitled_video
@@ -66,13 +66,13 @@ def main():
     cmd_stack = [
         ffmpeg_path,
         "-y",
-        "-i", main_subtitled_video,  # top video
-        "-i", bottom_video,          # bottom video
-        # vstack merges them top/bottom; scale=1080:1920 if you want a TikTok-style vertical
-        "-filter_complex", "[0:v][1:v]vstack=inputs=2,scale=1080:1920",
+        "-i", main_subtitled_video,
+        "-i", bottom_video,
+        "-filter_complex",
+        "[0:v]scale=1920:-1[v0];[1:v]scale=1920:-1[v1];[v0][v1]vstack=inputs=2",
         "-c:v", "libx264",
-        "-crf", "23",       # Adjust CRF for desired quality (lower=better)
-        "-preset", "fast",  # or "medium"/"slow" for better compression
+        "-crf", "23",
+        "-preset", "fast",
         "-c:a", "aac",
         stacked_video
     ]
@@ -82,7 +82,7 @@ def main():
     print(f"Created stacked video: {os.path.abspath(stacked_video)}")
 
     # === STEP D: (Optional) Split the stacked video into chunks ===
-    print("\n=== STEP D: Splitting into 180-second chunks ===")
+    print("\n=== STEP D: Splitting into 60-second chunks ===")
     os.makedirs(chunk_folder, exist_ok=True)
     chunk_pattern = os.path.join(chunk_folder, "chunk_%03d.mp4")
 
@@ -93,7 +93,7 @@ def main():
         "-c", "copy",
         "-map", "0",
         "-f", "segment",
-        "-segment_time", "180",  # 3 minutes
+        "-segment_time", "60",  # 3 minutes
         "-reset_timestamps", "1",
         chunk_pattern
     ]
