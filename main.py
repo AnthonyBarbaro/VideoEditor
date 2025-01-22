@@ -27,8 +27,8 @@ def main():
     ffmpeg_path = r"C:\Users\antho\miniconda3\envs\tiktok_env\Library\bin\ffmpeg.exe"
 
     # 2) Paths for input videos
-    main_video = "videos/main3_1920x1080.mp4"  # The main “top” video
-    bottom_video = "videos/bottom1.mp4"  # The bottom video
+    main_video = "videos/main1.mp4"  # The main “top” video
+    bottom_video = "videos/bottom.mp4"  # The bottom video
 
     # 3) Output file names/directories
     subtitles_file = "temp/main_subtitles.srt"
